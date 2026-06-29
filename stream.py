@@ -355,9 +355,7 @@ class OverlayWindow(tk.Toplevel):
         self._show_image(self.config.get("default_image", ""))
 
         master.bind("<KeyPress>", self._on_key_press, add=True)
-        master.bind("<KeyRelease>", self._on_key_release, add=True)
         self.bind("<KeyPress>", self._on_key_press, add=True)
-        self.bind("<KeyRelease>", self._on_key_release, add=True)
 
         self.canvas.bind("<Button-1>", self._drag_start)
         self.canvas.bind("<B1-Motion>", self._drag_move)
@@ -402,14 +400,8 @@ class OverlayWindow(tk.Toplevel):
                 self._cache_image(path)
             self._show_image(path)
 
-    def _on_key_release(self, event):
-        if event.keysym == self._active_key:
-            self._active_key = None
-            self._show_image(self.config.get("default_image", ""))
-
     def _stop(self):
         self.master.unbind("<KeyPress>")
-        self.master.unbind("<KeyRelease>")
         self.destroy()
         self.on_stop()
 
