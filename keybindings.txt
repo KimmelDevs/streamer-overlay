@@ -1,0 +1,10 @@
+# Streamer Emote Overlay — key bindings
+# Format:  key = image_filename.png
+# Special: default = image shown when no key is held
+#
+# Images live in the 'images' folder next to this script.
+# You can edit this file in Notepad too — just save and restart.
+
+default = 
+
+k = Tuazon - Infographic.png
