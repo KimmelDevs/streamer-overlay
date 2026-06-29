@@ -343,19 +343,13 @@ class OverlayWindow(tk.Toplevel):
         self.attributes("-transparentcolor", "#010101")
         self.configure(bg="#010101")
 
+        # Pin flush to bottom-right corner, no padding
         sw, sh = self.winfo_screenwidth(), self.winfo_screenheight()
-        pad = 24
-        self.geometry(f"{self.SIZE}x{self.SIZE+40}+"
-                      f"{sw-self.SIZE-pad}+{sh-self.SIZE-60-pad}")
+        self.geometry(f"{self.SIZE}x{self.SIZE}+{sw-self.SIZE}+{sh-self.SIZE}")
 
         self.canvas = tk.Canvas(self, width=self.SIZE, height=self.SIZE,
                                 bg="#010101", highlightthickness=0)
-        self.canvas.pack()
-
-        tk.Button(self, text="■  Stop", font=("Segoe UI", 9, "bold"),
-                  fg="#e8e6ff", bg="#3C3489", activebackground="#26215C",
-                  activeforeground="#e8e6ff", relief="flat", cursor="hand2",
-                  command=self._stop).pack(fill="x", ipady=5)
+        self.canvas.pack(padx=0, pady=0)
 
         self._load_images()
         self._show_image(self.config.get("default_image", ""))
@@ -437,6 +431,7 @@ class App:
 
         self.config = load_config()
         self.current_frame = None
+        self.overlay = None
         self.show_home()
         self.root.mainloop()
 
@@ -459,19 +454,28 @@ class App:
 
     def start_overlay(self):
         self._clear()
-        self.root.geometry("480x180")
+        self.root.geometry("480x220")
         frame = tk.Frame(self.root, bg="#0f0f13")
         frame.pack(fill="both", expand=True)
         tk.Label(frame, text="● Overlay running",
                  font=("Segoe UI", 14, "bold"), fg="#1D9E75", bg="#0f0f13"
-                 ).pack(pady=(40, 6))
-        tk.Label(frame,
-                 text="Hold a configured key to swap the emote.\n"
-                      "Use the ■ Stop button on the overlay to return home.",
-                 font=("Segoe UI", 10), fg="#7a78a0", bg="#0f0f13", justify="center"
+                 ).pack(pady=(36, 6))
+        tk.Label(frame, text="Hold a configured key to swap the emote.",
+                 font=("Segoe UI", 10), fg="#7a78a0", bg="#0f0f13"
                  ).pack()
+
+        def stop_overlay():
+            if self.overlay:
+                self.overlay._stop()
+
+        tk.Button(frame, text="■  Stop overlay", font=("Segoe UI", 10, "bold"),
+                  fg="#e8e6ff", bg="#3C3489", activebackground="#26215C",
+                  activeforeground="#e8e6ff", relief="flat", cursor="hand2",
+                  padx=16, pady=6, command=stop_overlay).pack(pady=(20, 0))
+
         self.current_frame = frame
-        OverlayWindow(self.root, self.config, on_stop=self.show_home).lift()
+        self.overlay = OverlayWindow(self.root, self.config, on_stop=self.show_home)
+        self.overlay.lift()
 
 if __name__ == "__main__":
     try:
